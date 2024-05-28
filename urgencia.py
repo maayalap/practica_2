@@ -1,5 +1,3 @@
-
-
 class Paciente:
     def __init__(self, id, genero, nombre, edad, triaje):
         self.id = id
@@ -25,7 +23,16 @@ class Nodo:
         if self.hijo_derecho:
             ret += self.hijo_derecho.__str__(level + 1)
         return ret
-    
+
+def printTree(node, prefix="", is_left=True):
+    if not node:
+        return
+    if node.hijo_derecho:
+        printTree(node.hijo_derecho, prefix + ("│   " if is_left else "    "), False)
+    print(prefix + ("└── " if is_left else "┌── ") + str(node.valor.triaje))
+    if node.hijo_izquierdo:
+        printTree(node.hijo_izquierdo, prefix + ("    " if is_left else "│   "), True)
+
 class ColaPrioridad:
     def __init__(self):
         self.raiz = None
@@ -61,9 +68,9 @@ class ColaPrioridad:
                         break
                     else:
                         nodo_actual = nodo_actual.hijo_derecho
-            self.comparar_pabre(nuevo_nodo)
+            self.comparar_padre(nuevo_nodo)
 
-    def comparar_pabre(self, nodo):
+    def comparar_padre(self, nodo):
         while nodo.padre and nodo.valor.triaje < nodo.padre.valor.triaje:
             nodo.valor, nodo.padre.valor = nodo.padre.valor, nodo.valor
             nodo = nodo.padre
@@ -190,4 +197,17 @@ class ColaPrioridad:
     def consultar_pacientes_por_triaje(self, triaje):
         return [paciente for paciente in self.consultar_pacientes_espera() if paciente.triaje == triaje]
 
+    def imprimir_arbol(self):
+        printTree(self.raiz)
 
+    def insertar_y_obtener_nivel(self, paciente):
+        self.encolar_paciente(paciente)
+        return self.obtener_nivel(self.raiz, paciente.id, 0)
+
+    def obtener_nivel(self, nodo, id_paciente, nivel):
+        if nodo is None:
+            return -1
+        if nodo.valor.id == id_paciente:
+            return nivel
+        nivel_izq = self.obtener_nivel(nodo.hijo_izquierdo, id_paciente, nivel + 1)
+        return nivel_izq

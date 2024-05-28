@@ -82,6 +82,7 @@ def menu():
                 print(paciente_eliminado)
             else:
                 print("No se encontró un paciente con ese ID.")
+                
 
         elif opcion == "7":
             print("Saliendo del sistema.")
